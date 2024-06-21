@@ -1,4 +1,4 @@
-name: blueforest
+name: demoblueforest
 channels:
   - conda-forge
   - pytorch

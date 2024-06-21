@@ -29,11 +29,16 @@ jobs:
       - 
         name: Checkout
         uses: actions/checkout@v4
+        with:
+          lfs: true
+      - 
+        name: Checkout LFS objects
+        run: git lfs checkout && git lfs pull
       - 
         name: Build
         uses: docker/build-push-action@v5
         with:
           push: true
           file: Dockerfile
-          platforms: linux/amd64,linux/arm64,linux/ppc64le
-          tags: ${{secrets.DOCKERHUB_USERNAME}}/blueforest
+          platforms: linux/amd64
+          tags: ${{secrets.DOCKERHUB_USERNAME}}/demoblueforest

@@ -2,29 +2,34 @@
   FROM hieupth/mamba AS build
 
   ADD . .
-  RUN apt-get update && \
-      apt-get install -y build-essential pkg-config libssl-dev && \
-      mamba install -c conda-forge conda-pack && \
+  RUN mamba install -c conda-forge conda-pack && \
       mamba env create -f environment.yml
   # Make RUN commands use the new environment:
-  SHELL ["conda", "run", "-n", "blueforest", "/bin/bash", "-c"]
+  SHELL ["conda", "run", "-n", "demoblueforest", "/bin/bash", "-c"]
   RUN mamba install -y pytorch torchvision torchaudio cpuonly -c pytorch
   # Pack environment.
-  RUN conda-pack -n gfn -o /tmp/env.tar && \
+  RUN conda-pack -n demoblueforest -o /tmp/env.tar && \
       mkdir /venv && cd /venv && tar xf /tmp/env.tar && \
       rm /tmp/env.tar
   # Unpack environment.
   RUN /venv/bin/conda-unpack
   
   # Runtime stage:
-  FROM debian:buster AS runtime
+  FROM ubuntu:22.04 AS runtime
   # Copy /venv from the previous stage:
   COPY --from=build /venv /venv
-  ADD . .
+  COPY resources resources
+  COPY app.py app.py
+  COPY warmup.py warmup.py
+  COPY faceparser.py faceparser.py
+  COPY imgutils.py imgutils.py
   #
   RUN apt-get update -y && \
-      apt-get upgrade -y
+      apt-get install -y libgl1-mesa-glx libegl1-mesa libopengl0 && \
+      # Clean cache.
+      apt-get clean && rm -rf /var/lib/apt/lists/*
   #
   SHELL ["/bin/bash", "-c"]
+  RUN source /venv/bin/activate && python warmup.py
   EXPOSE 7860
   ENTRYPOINT source /venv/bin/activate && python app.py
