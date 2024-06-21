@@ -9,8 +9,10 @@ from fastapi import FastAPI
 
 CUSTOM_PATH = os.environ.get('CUSTOM_PATH', '')
 
-tree_img = cv2.cvtColor(cv2.imread('resources/background.jpg', cv2.IMREAD_COLOR), cv2.COLOR_BGR2RGB)
-sky_img = cv2.cvtColor(cv2.imread('resources/skinground.jpg', cv2.IMREAD_COLOR), cv2.COLOR_BGR2RGB)
+tree_img = os.path.join(os.getcwd(), 'resources/background.jpg')
+tree_img = cv2.cvtColor(cv2.imread(tree_img, cv2.IMREAD_COLOR), cv2.COLOR_BGR2RGB)
+sky_img = os.path.join(os.getcwd(), 'resources/skinground.jpg')
+sky_img = cv2.cvtColor(cv2.imread(sky_img, cv2.IMREAD_COLOR), cv2.COLOR_BGR2RGB)
 
 def fusion_step_1(sky, tree, skin):
   skin_rgb = cv2.cvtColor(skin, cv2.COLOR_GRAY2RGB)
@@ -52,10 +54,4 @@ demo = gr.Interface(
 # demo.launch().queue(default_concurrency_limit=15)
 
 app = FastAPI()
-
-@app.get("/")
-def read_main():
-    return {"message": "This is your main app"}
-
-#io = gr.Interface(lambda x: "Hello, " + x + "!", "textbox", "textbox")
 app = gr.mount_gradio_app(app, demo, path=CUSTOM_PATH)
