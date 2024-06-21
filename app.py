@@ -1,9 +1,13 @@
 import cv2
+import os
 import numpy as np
 import gradio as gr
 import faceparser
 import imgutils
 from PIL import Image
+from fastapi import FastAPI
+
+CUSTOM_PATH = os.environ.get('CUSTOM_PATH', '')
 
 tree_img = cv2.cvtColor(cv2.imread('resources/background.jpg', cv2.IMREAD_COLOR), cv2.COLOR_BGR2RGB)
 sky_img = cv2.cvtColor(cv2.imread('resources/skinground.jpg', cv2.IMREAD_COLOR), cv2.COLOR_BGR2RGB)
@@ -45,4 +49,13 @@ demo = gr.Interface(
   inputs=["image", gr.Slider(value=0, minimum=-127, maximum=127, step=1)],
   outputs=["image"]
 )
-demo.launch(share=True).queue(default_concurrency_limit=15)
+# demo.launch().queue(default_concurrency_limit=15)
+
+app = FastAPI()
+
+@app.get("/")
+def read_main():
+    return {"message": "This is your main app"}
+
+#io = gr.Interface(lambda x: "Hello, " + x + "!", "textbox", "textbox")
+app = gr.mount_gradio_app(app, demo, path=CUSTOM_PATH)

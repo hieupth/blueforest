@@ -6,7 +6,7 @@
       mamba env create -f environment.yml
   # Make RUN commands use the new environment:
   SHELL ["conda", "run", "-n", "demoblueforest", "/bin/bash", "-c"]
-  RUN mamba install -y pytorch torchvision torchaudio cpuonly -c pytorch
+  RUN mamba install -y pytorch torchvision cpuonly -c pytorch
   # Pack environment.
   RUN conda-pack -n demoblueforest -o /tmp/env.tar && \
       mkdir /venv && cd /venv && tar xf /tmp/env.tar && \

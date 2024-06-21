@@ -1,13 +1,16 @@
-name: Build base images
+name: Build run images
 
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows: ["Build base images"]
   push:
     branches:
       - 'main'
     paths:
-      - 'environment.yml'
-      - 'base.dockerfile'
+      - '*.py'
+      - 'run.dockerfile'
+      - 'resources/*'
 
 jobs:
   build:
@@ -40,6 +43,6 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          file: base.dockerfile
+          file: run.dockerfile
           platforms: linux/amd64
-          tags: ${{secrets.DOCKERHUB_USERNAME}}/demoblueforest:base
+          tags: ${{secrets.DOCKERHUB_USERNAME}}/demoblueforest
