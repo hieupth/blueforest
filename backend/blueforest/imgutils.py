@@ -12,3 +12,9 @@ def brightness(image, contrast, brightness):
   img = np.clip(img, 0, 255)
   img = np.uint8(img) 
   return img
+
+def bitwisepair(src1, src2, mask):
+  maskrgb = cv2.cvtColor(mask, cv2.COLOR_GRAY2RGB)
+  dst1 = cv2.bitwise_and(src1, maskrgb, mask=mask)
+  dst2 = cv2.bitwise_and(src2, cv2.bitwise_not(maskrgb), mask=cv2.bitwise_not(mask))
+  return dst1, dst2
