@@ -22,6 +22,7 @@ font = ImageFont.truetype(os.environ.get('FONT', os.path.join(os.getcwd(), 'reso
 
 
 def run(image, caption = None):
+  caption = caption[:min(len(caption), int(os.environ.get('CAPTION_LENGTH', 50)))]
   # Copy tree and sky images.
   _tree = tree.copy()
   _sky = cv2.resize(sky, (_tree.shape[1], _tree.shape[0]))

@@ -10,4 +10,4 @@ demo = gr.Interface(
   inputs=["image", "text"],
   outputs=["image"]
 )
-demo.launch().queue(default_concurrency_limit=15)
+demo.queue(default_concurrency_limit=15).launch(server_name="0.0.0.0")
