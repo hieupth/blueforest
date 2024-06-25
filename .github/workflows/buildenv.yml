@@ -33,6 +33,10 @@ jobs:
         with:
           lfs: true
       - 
+        name: Checkout LFS
+        run: |
+          git lfs pull
+      - 
         name: Build
         uses: docker/build-push-action@v5
         with:
