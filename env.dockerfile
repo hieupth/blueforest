@@ -19,14 +19,10 @@
   WORKDIR /root
   # Copy /venv from the previous stage:
   COPY --from=build /venv /venv
-  COPY resources ./resources
-  COPY warmup.py warmup.py
-  #
   RUN apt-get update -y && \
       apt-get install -y \
         libgl1-mesa-glx \
         libegl1-mesa \
         libopengl0 && \
       # Clean cache.
-      apt-get clean && rm -rf /var/lib/apt/lists/* && \
-      ls -la resources && source /venv/bin/activate && python warmup.py
+      apt-get clean && rm -rf /var/lib/apt/lists/*

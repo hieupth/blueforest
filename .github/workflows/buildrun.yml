@@ -1,0 +1,48 @@
+name: Build run images
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Build env images"]
+  push:
+    branches:
+      - 'main'
+    paths:
+      - '*.py'
+      - 'run.dockerfile'
+      - 'resources/*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - 
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: all
+      - 
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - 
+        name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{secrets.DOCKERHUB_USERNAME}}
+          password: ${{secrets.DOCKERHUB_TOKEN}}
+      - 
+        name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+      - 
+        name: Checkout LFS objects
+        run: git lfs checkout && git lfs pull
+      - 
+        name: Build
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          file: run.dockerfile
+          platforms: linux/amd64
+          tags: ${{secrets.DOCKERHUB_USERNAME}}/demoblueforest
