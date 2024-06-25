@@ -19,7 +19,7 @@
   WORKDIR /root
   # Copy /venv from the previous stage:
   COPY --from=build /venv /venv
-  COPY resources .
+  COPY resources ./resources
   COPY warmup.py warmup.py
   #
   RUN apt-get update -y && \

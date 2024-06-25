@@ -3,17 +3,23 @@ import cv2
 import random
 from . import imgutils
 from . import faceparser
-from PIL import Image
+from PIL import Image, ImageFont, ImageDraw
+
 
 tree = cv2.cvtColor(cv2.imread(os.environ.get('TREE_IMAGE', os.path.join(os.getcwd(), 'resources', 'background.jpg')), cv2.IMREAD_COLOR), cv2.COLOR_BGR2RGB)
 sky = cv2.cvtColor(cv2.imread(os.environ.get('SKY_IMAGE', os.path.join(os.getcwd(), 'resources', 'skinground.jpg')), cv2.IMREAD_COLOR), cv2.COLOR_BGR2RGB)
-
+#
 captions = []
 captions_dir = os.environ.get('CAPTION_IMAGES_DIR', os.path.join(os.getcwd(), 'resources', 'caption'))
 for i in range(1, 6):
   cap = os.path.join(captions_dir, f'{i}.png')
   cap = Image.open(cap)
   captions.append(cap)
+#
+customcap = Image.open(os.environ.get('CUSTOM_CAP_IMAGE', os.path.join(os.getcwd(), 'resources', 'customcaption.png')))
+#
+font = ImageFont.truetype(os.environ.get('FONT', os.path.join(os.getcwd(), 'resources', 'fonts', 'SVN-GOTHAM BOLD.TTF')), 70)
+
 
 def run(image, caption = None):
   # Copy tree and sky images.
@@ -42,10 +48,28 @@ def run(image, caption = None):
   dst3 = imgutils.brightness_by_grayscale(portait, dst2, cv2.bitwise_not(mask_color_adjust), thresh=thresh, brightness=0)
   #
   merged = imgutils.draw_image_on_image(dst3 + dst1, _tree, x_margin_right, 0)
+  merged = Image.fromarray(merged).convert('RGBA')
   if caption is None:
     cap = random.choice(captions).copy()
-    merged = Image.fromarray(merged).convert('RGBA')
     cap = cap.resize((merged.width, merged.height))
     merged.paste(cap, (0, 0), cap)
-    merged = merged.convert('RGB')
+  else:
+    _caps = caption.split(' ')
+    _cap = ""
+    for i in range(0, len(_caps)):
+      z = (i + 1) % 2
+      if z == 0:
+        _cap = f'{_cap} {_caps[i]}\n'
+      else:
+        _cap = f'{_cap}{_caps[i]}'
+    _cap = _cap.upper()
+    _caps = _cap.splitlines()
+    cap = customcap.resize((merged.width, merged.height))
+    merged.paste(cap, (0, 0), cap)
+    h, w = merged.height, merged.width
+    for i in range(0, len(_caps)):
+      draw = ImageDraw.Draw(merged)
+      draw.text((50, int(h * 0.6 + i * 80)), _caps[i], (255, 255, 255), font=font)
+  merged = merged.convert('RGB')
+  # merged.show()
   return merged
