@@ -7,3 +7,5 @@ dependencies:
   - transformers
   - opencv
   - onnxruntime
+  - fastapi
+  - uvicorn

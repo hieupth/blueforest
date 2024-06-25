@@ -49,7 +49,7 @@ def run(image, caption = None):
   #
   merged = imgutils.draw_image_on_image(dst3 + dst1, _tree, x_margin_right, 0)
   merged = Image.fromarray(merged).convert('RGBA')
-  if caption is None:
+  if caption is None or len(caption) < 1:
     cap = random.choice(captions).copy()
     cap = cap.resize((merged.width, merged.height))
     merged.paste(cap, (0, 0), cap)
