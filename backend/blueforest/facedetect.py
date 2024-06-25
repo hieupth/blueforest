@@ -20,18 +20,6 @@ class DetectBase():
     self.model_inpsize = (w, h)
 
   def inference(self, img: np.array, test_size=(640, 640), det_thres=0.7, get_layer='head') -> list:
-    """ Execute the main process
-    Args:
-        img (np.array): _description_
-        test_size (tuple, optional): _description_. Defaults to (640, 640).
-        det_thres (float, optional): _description_. Defaults to 0.6.
-        get_layer (_type_, optional): _description_. Defaults to None.
-    Returns:
-        bbox: xyxy object
-        score: bbox score of object detection
-        label: both face = head = 0 (the same class name)
-        kpts: if get_layer == 'face' return keypoints else None
-    """
     # preprocess input
     tensor_img, ratio, dwdh = self.preprocess(img, test_size)
     # model prediction
@@ -50,17 +38,6 @@ class DetectBase():
     return bboxes, scores, labels, kpts
       
   def preprocess(self, im:np.array, new_shape=(640, 640), color=(114, 114, 114), scaleup=True) -> list:
-      """ Preprocessing function with reshape and normalize input
-      Args:
-          im (np.array, optional): input image
-          new_shape (tuple, optional): new shape to resize. Defaults to (640, 640).
-          color (tuple, optional): _description_. Defaults to (114, 114, 114).
-          scaleup (bool, optional): resize small to large input size. Defaults to True.
-      Returns:
-          im: image after normalize and resize
-          r: scale ratio between original and new shape 
-          dw, dh: padding follow by yolo processing
-      """
       # Resize and pad image while meeting stride-multiple constraints
       shape = im.shape[:2]  # current shape [height, width]
       if isinstance(new_shape, int):
@@ -88,28 +65,6 @@ class DetectBase():
       return im, r, (dw, dh)
   
   def postprocess(self, pred, ratio, dwdh, det_thres = 0.7, get_layer=None):
-      """Processing output model match output format
-      Args:
-          pred (array): predict output model 
-              base_opt: batch_index, xmin, ymin, xmax, ymax, bbox_label, bbox_score
-              - pred w/o keypoint
-                  pred[batch, 7]: base_opt
-              - pred with keypoint
-                  pred[batch, 7 + kpts]: base_opt,
-                                          x_keypoint1, y_keypoint1, keypoint1_score,
-                                          x_keypoint2, y_keypoint2, keypoint2_score,
-                                          ...
-                                          x_keypoint, y_keypoint2, keypoint2_score,
-          ratio (float, optional): 
-          dwdh (float, optional): 
-          det_thres (float, optional): _description_. Defaults to 0.7.
-          get_layer (str, optional): get detection output layer if the ouput has:
-                                      3 items [head, face, body]
-                                      2 items [face, head].
-
-      Returns:
-          [bbox, score, class_name, keypoints]
-      """
       assert get_layer != None, f'get_layer is not None'
       if isinstance(pred, list):
           pred = np.array(pred)
@@ -126,4 +81,3 @@ class DetectBase():
 
 facedet = DetectBase()
 facedet.load_model(os.environ.get('FACE_DETECTION_MODEL', os.path.join(os.getcwd(), 'resources', 'facedet.onnx')))
-pass

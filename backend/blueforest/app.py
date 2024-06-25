@@ -27,6 +27,4 @@ def run(image):
   dst3 = imgutils.brightness_by_grayscale(portait, dst2, cv2.bitwise_not(mask_color_adjust), thresh=thresh, brightness=0)
   #
   merged = imgutils.draw_image_on_image(dst3 + dst1, tree, portait_tree_coor[0], 0)
-  cv2.imshow('test', cv2.cvtColor(merged, cv2.COLOR_RGB2BGR))
-  cv2.waitKey()
-
+  return merged
