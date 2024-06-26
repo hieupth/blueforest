@@ -12,6 +12,7 @@ import cloudinary.uploader
 import cloudinary.api
 from cloudinary import CloudinaryImage
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 
 app = FastAPI()
@@ -41,3 +42,11 @@ async def create_upload_file(file: UploadFile, caption: str = ""):
   cloudinary.uploader.upload_image(img_byte_arr.getbuffer(), public_id=hash, unique_filename = False, overwrite=True)
   srcURL = CloudinaryImage(hash).build_url()
   return JSONResponse({'url': srcURL})
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
