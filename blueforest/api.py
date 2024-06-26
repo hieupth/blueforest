@@ -4,8 +4,10 @@ from PIL import Image
 import numpy as np
 import io
 from blueforest.app import run
+from pillow_heif import register_heif_opener
 
 app = FastAPI()
+register_heif_opener()
 
 @app.post("/run/")
 async def create_upload_file(file: UploadFile, caption: str = ""):

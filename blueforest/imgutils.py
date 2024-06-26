@@ -24,7 +24,7 @@ def bitwisepair(src1, src2, mask):
 
 def crop_portait(image):
   crops = []
-  bboxes, scores, _, _ = facedet.inference(image, det_thres=0.6, get_layer='face')
+  bboxes, scores, _, _ = facedet.inference(image, det_thres=0.4, get_layer='face')
   if len(bboxes) > 0:
     for xyxy, _ in zip(bboxes, scores):
       x1, y1, x2, y2 = xyxy.astype(int)

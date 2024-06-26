@@ -9,3 +9,5 @@ dependencies:
   - onnxruntime
   - fastapi
   - uvicorn
+  - pip:
+    - pillow-heif
